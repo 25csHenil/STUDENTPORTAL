@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Hub Portal - Events</title>
+
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            color: #222;
+        }
+
+        /* Accessibility: Skip Navigation Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #005bea;
+            color: #ffffff;
+            padding: 10px 15px;
+            z-index: 100;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom-right-radius: 8px;
+            transition: top 0.2s ease;
+        }
+
+        .skip-link:focus {
+            top: 0;
+            outline: 3px solid #00c6fb;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #005bea, #00c6fb);
+            color: white;
+            text-align: center;
+            padding: 35px;
+        }
+
+        header h1 {
+            font-size: 40px;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        /* Navigation */
+        nav {
+            background: #111;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 18px;
+            transition: .3s;
+        }
+
+        nav a:hover,
+        nav a:focus {
+            background: #00c6fb;
+            color: black;
+            outline: none;
+        }
+
+        /* Active Page State */
+        nav a[aria-current="page"] {
+            background: #005bea;
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        .container {
+            width: 90%;
+            margin: 40px auto;
+        }
+
+        /* Event Grid Layout */
+        .events {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        /* Event Card */
+        .event-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+            transition: .3s;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .event-card h2 {
+            color: #005bea;
+            margin-bottom: 15px;
+        }
+
+        .event-card p {
+            line-height: 1.6;
+            margin-bottom: auto;
+        }
+
+        /* Semantic Time Tag Styling */
+        time.date {
+            background: #005bea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: #005bea;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        button:hover,
+        button:focus {
+            background: #003f9e;
+            outline: none;
+        }
+
+        /* Footer */
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        @media(max-width:700px) {
+            nav a {
+                width: 100%;
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
+
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <h1>🎉 College Events</h1>
+        <p>Stay updated with upcoming activities</p>
+    </header>
+
+    <nav aria-label="Main Navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="events.html" aria-current="page">Events</a>
+        <a href="profile.html">Profile</a>
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+        <a href="faq.html">FAQ</a>
+        <a href="feedback.html">Feedback</a>
+    </nav>
+
+    <main id="main-content" class="container">
+
+        <section class="events" aria-label="Upcoming Events Grid">
+
+            <article class="event-card">
+                <time datetime="2026-08-15" class="date">15 August 2026</time>
+                <h2>🇮🇳 Independence Day</h2>
+                <p>
+                    Celebration of Independence Day with cultural programs, speeches and student activities.
+                </p>
+                <button type="button" aria-label="Join Independence Day Event">Join Event</button>
+            </article>
+
+            <article class="event-card">
+                <time datetime="2026-09-20" class="date">20 September 2026</time>
+                <h2>💻 Tech Fest</h2>
+                <p>
+                    A technical festival where students participate in coding, robotics and innovation competitions.
+                </p>
+                <button type="button" aria-label="Join Tech Fest Event">Join Event</button>
+            </article>
+
+            <article class="event-card">
+                <time datetime="2026-10-10" class="date">10 October 2026</time>
+                <h2>🏆 Sports Day</h2>
+                <p>
+                    Annual sports competition including cricket, football, athletics and indoor games.
+                </p>
+                <button type="button" aria-label="Join Sports Day Event">Join Event</button>
+            </article>
+
+            <article class="event-card">
+                <time datetime="2026-11-25" class="date">25 November 2026</time>
+                <h2>🎭 Cultural Festival</h2>
+                <p>
+                    Enjoy music, dance, drama and creative performances by students.
+                </p>
+                <button type="button" aria-label="Join Cultural Festival Event">Join Event</button>
+            </article>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Student Hub Portal | All Rights Reserved</p>
+    </footer>
+
+</body>
+
+</html>

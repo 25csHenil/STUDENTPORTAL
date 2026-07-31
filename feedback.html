@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Hub Portal - Feedback</title>
+
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            color: #222;
+        }
+
+        /* Accessibility: Skip Navigation Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #005bea;
+            color: #ffffff;
+            padding: 10px 15px;
+            z-index: 100;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom-right-radius: 8px;
+            transition: top 0.2s ease;
+        }
+
+        .skip-link:focus {
+            top: 0;
+            outline: 3px solid #00c6fb;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #005bea, #00c6fb);
+            color: white;
+            text-align: center;
+            padding: 35px;
+        }
+
+        header h1 {
+            font-size: 36px;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        /* Navigation */
+        nav {
+            background: #111;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 18px;
+            transition: .3s;
+        }
+
+        nav a:hover,
+        nav a:focus {
+            background: #00c6fb;
+            color: black;
+            outline: none;
+        }
+
+        /* Active Navigation Indicator */
+        nav a[aria-current="page"] {
+            background: #005bea;
+            font-weight: bold;
+        }
+
+        /* Main Container & Card Section */
+        .container {
+            width: 80%;
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, .15);
+        }
+
+        .card h2 {
+            color: #005bea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Form Controls & Accessibility Styling */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: 2px solid #005bea;
+            border-color: transparent;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            background: #005bea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover,
+        button:focus {
+            background: #003f9e;
+            outline: none;
+        }
+
+        /* Footer */
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        @media(max-width:700px) {
+            nav a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <h1>📝 Feedback</h1>
+        <p>We value your suggestions</p>
+    </header>
+
+    <nav aria-label="Main Navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="events.html">Events</a>
+        <a href="profile.html">Profile</a>
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+        <a href="faq.html">FAQ</a>
+        <a href="feedback.html" aria-current="page">Feedback</a>
+    </nav>
+
+    <main id="main-content" class="container">
+
+        <section class="card">
+
+            <h2>Send Feedback</h2>
+
+            <form action="#" method="post">
+
+                <div class="form-group">
+                    <label for="feedback-name">Your Name:</label>
+                    <input type="text" id="feedback-name" name="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="feedback-email">Your Email:</label>
+                    <input type="email" id="feedback-email" name="email" placeholder="Enter your email address" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="feedback-message">Feedback Message:</label>
+                    <textarea id="feedback-message" name="message" placeholder="Write your feedback here..." required></textarea>
+                </div>
+
+                <button type="submit">Submit Feedback</button>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Student Hub Portal

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Hub Portal - Home</title>
+
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            color: #222;
+        }
+
+        /* Accessibility: Skip Navigation Link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #005bea;
+            color: #ffffff;
+            padding: 10px 15px;
+            z-index: 100;
+            text-decoration: none;
+            font-weight: bold;
+            border-bottom-right-radius: 8px;
+            transition: top 0.2s ease;
+        }
+
+        .skip-link:focus {
+            top: 0;
+            outline: 3px solid #00c6fb;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #005bea, #00c6fb);
+            color: white;
+            text-align: center;
+            padding: 35px;
+        }
+
+        header h1 {
+            font-size: 40px;
+        }
+
+        header p {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        /* Navigation */
+        nav {
+            background: #111;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 18px;
+            transition: .3s;
+        }
+
+        nav a:hover,
+        nav a:focus {
+            background: #00c6fb;
+            color: black;
+            outline: none;
+        }
+
+        /* Active Navigation Indicator */
+        nav a[aria-current="page"] {
+            background: #005bea;
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        .container {
+            width: 85%;
+            margin: 40px auto;
+        }
+
+        /* Section Cards */
+        .card {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .15);
+        }
+
+        .card h2 {
+            color: #005bea;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .card ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+
+        /* CTA Button */
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: #005bea;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn:hover,
+        .btn:focus {
+            background: #003f9e;
+            outline: 2px solid #00c6fb;
+        }
+
+        /* Footer */
+        footer {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media(max-width:700px) {
+            nav a {
+                width: 100%;
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
+
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <h1>🎓 Student Hub Portal</h1>
+        <p>Your Complete Student Management System</p>
+    </header>
+
+    <nav aria-label="Main Navigation">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="about.html">About</a>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="events.html">Events</a>
+        <a href="profile.html">Profile</a>
+        <a href="contact.html">Contact</a>
+        <a href="admin.html">Admin</a>
+        <a href="faq.html">FAQ</a>
+        <a href="feedback.html">Feedback</a>
+    </nav>
+
+    <main id="main-content" class="container">
+
+        <section class="card">
+            <h2>Welcome To Student Hub Portal</h2>
+            <p>
+                Student Hub Portal is a digital platform designed for students to manage registration, profile, events, academic activities, and communication with administration.
+            </p>
+            <a href="login.html" class="btn">Login Now</a>
+        </section>
+
+        <section class="card">
+            <h2>Our Features</h2>
+            <ul>
+                <li>✔ Online Student Registration</li>
+                <li>✔ Secure Login System</li>
+                <li>✔ Student Dashboard</li>
+                <li>✔ Event Management</li>
+                <li>✔ Profile Management</li>
+                <li>✔ Admin Panel</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Student Hub Portal | All Rights Reserved</p>
+    </footer>
+
+</body>
+
+</html>
