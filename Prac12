@@ -1,0 +1,256 @@
+db.php :
+
+<?php
+$conn = mysqli_connect("localhost", "root", "", "event_db");
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+
+edit.php:
+
+<?php
+include 'db.php';
+include 'upload.php';
+
+$id    = (int)$_GET['id'];
+$event = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM events WHERE id = $id"));
+if (!$event) {
+    die("Event not found.");
+}
+
+$error = "";
+
+// ---------- UPDATE ----------
+if (isset($_POST['update'])) {
+    $title    = mysqli_real_escape_string($conn, $_POST['title']);
+    $date     = mysqli_real_escape_string($conn, $_POST['event_date']);
+    $location = mysqli_real_escape_string($conn, $_POST['location']);
+    $category = mysqli_real_escape_string($conn, $_POST['category']);
+
+    list($new_poster, $error) = upload_poster($_FILES['poster'] ?? null);
+
+    if (!$error) {
+        $poster     = $new_poster ? $new_poster : $event['poster'];   // keep old one if no new file
+        $poster_sql = $poster ? "'$poster'" : "NULL";
+
+        mysqli_query($conn, "UPDATE events SET title='$title', event_date='$date', location='$location',
+                             category='$category', poster=$poster_sql WHERE id = $id");
+
+        if ($new_poster && $event['poster'] && file_exists("uploads/" . $event['poster'])) {
+            unlink("uploads/" . $event['poster']);                    // delete the OLD file after update
+        }
+        header("Location: index.php?msg=Event updated");
+        exit();
+    }
+}
+?>
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Edit Event</title></head>
+<body style="font-family: Arial; margin: 20px;">
+    <h2>Edit Event</h2>
+    <?php if ($error) echo "<p style='color:red'>" . htmlspecialchars($error) . "</p>"; ?>
+
+    <form method="POST" enctype="multipart/form-data">
+        <p><input type="text" name="title" value="<?php echo htmlspecialchars($event['title']); ?>" required></p>
+        <p><input type="date" name="event_date" value="<?php echo $event['event_date']; ?>" required></p>
+        <p><input type="text" name="location" value="<?php echo htmlspecialchars($event['location']); ?>" required></p>
+        <p>
+            <select name="category">
+                <?php foreach (['Music', 'Conference', 'Workshop', 'Sports'] as $c): ?>
+                    <option <?php if ($event['category'] == $c) echo 'selected'; ?>><?php echo $c; ?></option>
+                <?php endforeach; ?>
+            </select>
+        </p>
+        <p>
+            Current poster:<br>
+            <?php echo $event['poster'] ? "<img src='uploads/" . htmlspecialchars($event['poster']) . "' width='100'>" : "None"; ?>
+        </p>
+        <p>Change poster (optional): <input type="file" name="poster"></p>
+        <button type="submit" name="update">Update</button>
+        <a href="index.php">Cancel</a>
+    </form>
+</body>
+</html>
+
+index.php:
+
+
+<?php
+include 'db.php';
+include 'upload.php';
+
+$error = "";
+
+// ---------- CREATE ----------
+if (isset($_POST['add'])) {
+    $title    = mysqli_real_escape_string($conn, $_POST['title']);
+    $date     = mysqli_real_escape_string($conn, $_POST['event_date']);
+    $location = mysqli_real_escape_string($conn, $_POST['location']);
+    $category = mysqli_real_escape_string($conn, $_POST['category']);
+
+    list($poster, $error) = upload_poster($_FILES['poster'] ?? null);
+
+    if (!$error) {
+        $poster_sql = $poster ? "'$poster'" : "NULL";
+        mysqli_query($conn, "INSERT INTO events (title, event_date, location, category, poster)
+                             VALUES ('$title', '$date', '$location', '$category', $poster_sql)");
+        header("Location: index.php?msg=Event added successfully");
+        exit();
+    }
+}
+
+// ---------- DELETE ----------
+if (isset($_GET['delete'])) {
+    $id  = (int)$_GET['delete'];
+    $row = mysqli_fetch_assoc(mysqli_query($conn, "SELECT poster FROM events WHERE id = $id"));
+
+    mysqli_query($conn, "DELETE FROM events WHERE id = $id");
+    if ($row && $row['poster'] && file_exists("uploads/" . $row['poster'])) {
+        unlink("uploads/" . $row['poster']);          // remove the image file too
+    }
+    header("Location: index.php?msg=Event deleted");
+    exit();
+}
+
+// ---------- READ (search + category filter) ----------
+$search = mysqli_real_escape_string($conn, $_GET['search'] ?? '');
+$cat    = mysqli_real_escape_string($conn, $_GET['category'] ?? '');
+
+$sql = "SELECT * FROM events WHERE (title LIKE '%$search%' OR location LIKE '%$search%')";
+if ($cat != '') {
+    $sql .= " AND category = '$cat'";
+}
+$sql .= " ORDER BY id DESC";
+$result = mysqli_query($conn, $sql);
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Event Management</title>
+    <style>
+        body  { font-family: Arial; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        img   { width: 70px; height: 90px; object-fit: cover; }
+        .ok   { color: green; }
+        .err  { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Add Event</h2>
+
+    <?php if (isset($_GET['msg'])) echo "<p class='ok'>" . htmlspecialchars($_GET['msg']) . "</p>"; ?>
+    <?php if ($error) echo "<p class='err'>" . htmlspecialchars($error) . "</p>"; ?>
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="text" name="title" placeholder="Title" required>
+        <input type="date" name="event_date" required>
+        <input type="text" name="location" placeholder="Location" required>
+        <select name="category" required>
+            <option value="">Category</option>
+            <option>Music</option>
+            <option>Conference</option>
+            <option>Workshop</option>
+            <option>Sports</option>
+        </select>
+        <input type="file" name="poster">
+        <button type="submit" name="add">Add Event</button>
+    </form>
+
+    <h2>Events</h2>
+    <form method="GET">
+        <input type="text" name="search" placeholder="Search title or location" value="<?php echo htmlspecialchars($search); ?>">
+        <select name="category">
+            <option value="">All categories</option>
+            <?php foreach (['Music', 'Conference', 'Workshop', 'Sports'] as $c): ?>
+                <option <?php if ($cat == $c) echo 'selected'; ?>><?php echo $c; ?></option>
+            <?php endforeach; ?>
+        </select>
+        <button type="submit">Filter</button>
+        <a href="index.php">Reset</a>
+    </form>
+
+    <table>
+        <tr><th>ID</th><th>Poster</th><th>Title</th><th>Date</th><th>Location</th><th>Category</th><th>Action</th></tr>
+        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+        <tr>
+            <td><?php echo $row['id']; ?></td>
+            <td><?php echo $row['poster'] ? "<img src='uploads/" . htmlspecialchars($row['poster']) . "'>" : "No poster"; ?></td>
+            <td><?php echo htmlspecialchars($row['title']); ?></td>
+            <td><?php echo $row['event_date']; ?></td>
+            <td><?php echo htmlspecialchars($row['location']); ?></td>
+            <td><?php echo htmlspecialchars($row['category']); ?></td>
+            <td>
+                <a href="edit.php?id=<?php echo $row['id']; ?>">Edit</a> |
+                <a href="index.php?delete=<?php echo $row['id']; ?>" onclick="return confirm('Delete this event?');">Delete</a>
+            </td>
+        </tr>
+        <?php endwhile; ?>
+    </table>
+</body>
+</html>
+
+
+
+
+upload.php:
+
+<?php
+// STEP 1: the heart of the practical.
+// Checks a poster file and saves it. Returns [file_name, error_message].
+function upload_poster($file) {
+    // No file chosen -> fine, the poster is optional
+    if (empty($file) || $file['error'] == UPLOAD_ERR_NO_FILE) return [null, null];
+
+    // PHP itself rejected the file (too big for php.ini)
+    if ($file['error'] == UPLOAD_ERR_INI_SIZE) return [null, "File must be 2 MB or less."];
+    if ($file['error'] != UPLOAD_ERR_OK)       return [null, "Upload failed."];
+
+    // 1. Check type (extension)
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+        return [null, "Only JPG, PNG and WEBP files are allowed."];
+    }
+
+    // 2. Check size (2 MB)
+    if ($file['size'] > 2 * 1024 * 1024) {
+        return [null, "File must be 2 MB or less."];
+    }
+
+    // 3. Check it is really an image
+    if (!@getimagesize($file['tmp_name'])) {
+        return [null, "This file is not a real image."];
+    }
+
+    // 4. Give it a unique name and move it to the uploads folder
+    $new_name = time() . '_' . uniqid() . '.' . $ext;
+    if (!move_uploaded_file($file['tmp_name'], 'uploads/' . $new_name)) {
+        return [null, "Could not save the file."];
+    }
+    return [$new_name, null];
+}
+
+
+upload_demo.php:
+
+<?php
+// STEP 1 DEMO: test the upload alone, before any database
+include 'upload.php';
+
+$msg = "";
+if (isset($_POST['upload'])) {
+    list($name, $error) = upload_poster($_FILES['poster'] ?? null);
+    if ($error)     $msg = "Error: " . $error;
+    elseif ($name)  $msg = "Saved as: " . $name;
+    else            $msg = "No file chosen.";
+}
+?>
+<h2>File Upload Test</h2>
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="poster">
+    <button type="submit" name="upload">Upload</button>
+</form>
+<p><?php echo htmlspecialchars($msg); ?></p>
