@@ -1,0 +1,207 @@
+//db.php :
+
+
+
+<?php
+
+$host = "localhost";
+$username = "root";
+$password = "";
+$database = "user_registration";
+
+$conn = new mysqli($host, $username, $password, $database);
+
+if ($conn->connect_error) {
+    die("Database connection failed: " . $conn->connect_error);
+}
+
+$conn->set_charset("utf8mb4");
+
+?>
+
+
+Process_registration.php:
+
+<?php
+
+require_once "db.php";
+
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    die("Invalid request.");
+}
+
+// Get form data
+$username = trim($_POST["username"] ?? "");
+$email = trim($_POST["email"] ?? "");
+$password = $_POST["password"] ?? "";
+$confirm_password = $_POST["confirm_password"] ?? "";
+
+// Backend validation
+if ($username === "" || $email === "" || $password === "" || $confirm_password === "") {
+    die("All fields are required.");
+}
+
+// Validate username
+if (!preg_match("/^[a-zA-Z0-9_]{3,50}$/", $username)) {
+    die("Username must contain only letters, numbers, and underscore.");
+}
+
+// Validate email
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    die("Please enter a valid email address.");
+}
+
+// Validate password length
+if (strlen($password) < 6) {
+    die("Password must contain at least 6 characters.");
+}
+
+// Confirm password
+if ($password !== $confirm_password) {
+    die("Passwords do not match.");
+}
+
+// Check duplicate username/email
+$check = $conn->prepare(
+    "SELECT id FROM users WHERE username = ? OR email = ?"
+);
+
+$check->bind_param("ss", $username, $email);
+$check->execute();
+$check->store_result();
+
+if ($check->num_rows > 0) {
+    $check->close();
+    $conn->close();
+    die("Username or email already exists.");
+}
+
+$check->close();
+
+// Hash password
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+// Insert user
+$stmt = $conn->prepare(
+    "INSERT INTO users (username, email, password) VALUES (?, ?, ?)"
+);
+
+$stmt->bind_param(
+    "sss",
+    $username,
+    $email,
+    $hashed_password
+);
+
+if ($stmt->execute()) {
+
+    echo "<h2>Registration Successful!</h2>";
+    echo "<p>User registered successfully.</p>";
+
+} else {
+
+    echo "<h2>Registration Failed</h2>";
+    echo "<p>Unable to register user.</p>";
+}
+
+$stmt->close();
+$conn->close();
+
+?>
+
+//registeration.php:
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>User Registration</h2>
+
+    <form action="process_registration.php" method="POST">
+
+        <label>Username:</label>
+        <input 
+            type="text" 
+            name="username" 
+            required
+            minlength="3"
+            maxlength="50"
+        >
+
+        <label>Email:</label>
+        <input 
+            type="email" 
+            name="email" 
+            required
+        >
+
+        <label>Password:</label>
+        <input 
+            type="password" 
+            name="password" 
+            required
+            minlength="6"
+        >
+
+        <label>Confirm Password:</label>
+        <input 
+            type="password" 
+            name="confirm_password" 
+            required
+            minlength="6"
+        >
+
+        <button type="submit">Register</button>
+
+    </form>
+
+</div>
+
+</body>
+</html>
+
+//style.css:
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+
+.container {
+    width: 400px;
+    margin: 50px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+}
+
+h2 {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    cursor: pointer;
+}
