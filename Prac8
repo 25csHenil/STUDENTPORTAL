@@ -1,0 +1,100 @@
+
+<?php
+$host = "localhost";
+$dbname = "student1";
+$username = "root";
+$password = "";
+
+try {
+    $pdo = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password
+    );
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    exit("Database connection failed. Check your database settings.");
+}
+?>
+
+
+Register.html:
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudentHub Registration</title>
+</head>
+<body>
+    <h2>StudentHub Registration</h2>
+
+    <form action="register.php" method="POST">
+        <div>
+            <label for="full_name">Full Name:</label><br>
+            <input type="text" id="full_name" name="full_name" required>
+        </div>
+
+        <br>
+
+        <div>
+            <label for="email">Email Address:</label><br>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <br>
+
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
+
+
+
+Register.php:
+
+
+<?php
+require_once "db.php";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $full_name = trim($_POST["full_name"] ?? "");
+    $email = trim($_POST["email"] ?? "");
+
+    if ($full_name === "" || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        exit("Please enter a valid name and email.");
+    }
+
+    try {
+        $stmt = $pdo->prepare(
+            "INSERT INTO rudra1 (full_name, email)
+             VALUES (:full_name, :email)"
+        );
+
+        $stmt->execute([
+            "full_name" => $full_name,
+            "email" => $email
+        ]);
+
+        echo "Registration successful!";
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+
+        if ($e->getCode() === "23000") {
+            echo "This email address is already registered.";
+        } else {
+            http_response_code(500);
+            echo "Registration failed: " . $e->getMessage();
+        }
+    }
+} else {
+    echo "Please submit the registration form.";
+}
+?>
