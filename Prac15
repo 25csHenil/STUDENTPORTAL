@@ -1,0 +1,717 @@
+db.php :
+
+<?php
+$conn = new mysqli("localhost", "root", "", "studenthub2");
+if ($conn->connect_error) { die("Connection failed: " . $conn->connect_error); }
+?>
+
+
+index.php :
+
+<?php
+session_start();
+require 'db.php';
+$error = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $student_id = $conn->real_escape_string($_POST['student_id']);
+    $password = md5($_POST['password']);
+
+    $sql = "SELECT * FROM students WHERE student_id='$student_id' AND password='$password'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows == 1) {
+        $row = $result->fetch_assoc();
+        $_SESSION['student_id'] = $row['student_id'];
+        $_SESSION['name'] = $row['name'];
+        header("Location: dashboard.php");
+        exit();
+    } else {
+        $error = "Invalid ID or Password";
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Portal Login</title>
+    <style>
+        body { font-family: Arial; background-color: #f2f2f2; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        form { background-color: white; padding: 30px; width: 300px; border-radius: 10px; box-shadow: 0 0 10px gray; }
+        h1 { text-align: center; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; margin-bottom: 15px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .error { color: red; text-align: center; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <form method="POST" action="">
+        <h1>Student Portal</h1>
+        <?php if($error) echo "<div class='error'>$error</div>"; ?>
+        <label>Student ID</label>
+        <input type="text" name="student_id" placeholder="Enter Student ID" required>
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter Password" required>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+
+logout.php :
+
+<?php
+session_start();
+session_unset();
+session_destroy();
+header("Location: index.php");
+exit();
+?>
+
+achievements.php :
+
+<?php
+session_start();
+if (!isset($_SESSION['student_id'])) { header("Location: index.php"); exit(); }
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: Arial;
+        }
+        /* CSS Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .grid div {
+            padding: 12px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        /* Flexbox */
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <div class="card shadow">
+        <h2 class="text-center bg-primary text-white p-3">
+            Achievements
+        </h2>
+        <div class="card-body">
+            <!-- CSS Grid -->
+            <h4>CSS Grid</h4>
+            <div class="grid">
+                <div>🏆 First Prize in Coding Competition</div>
+                <div>🎖 Java Programming Certificate</div>
+                <div>🏅 College Cricket Tournament Runner-up</div>
+                <div>📜 Web Development Workshop Certificate</div>
+                <div>⭐ Best Student Award - 2025</div>
+            </div>
+            <hr>
+
+            <!-- Flexbox -->
+            <h4>Flexbox</h4>
+            <div class="flex">🏆 Coding Competition</div>
+            <div class="flex">🎖 Java Certificate</div>
+            <div class="flex">🏅 Cricket Tournament Runner-up</div>
+            <hr>
+            <!-- Bootstrap -->
+            <h4>Bootstrap</h4>
+            <ul class="list-group">
+                <li class="list-group-item">🏆 First Prize in Coding Competition</li>
+                <li class="list-group-item">🎖 Java Programming Certificate</li>
+                <li class="list-group-item">🏅 College Cricket Tournament Runner-up</li>
+                <li class="list-group-item">📜 Web Development Workshop Certificate</li>
+                <li class="list-group-item">⭐ Best Student Award - 2025</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+   address.php:
+
+<?php
+session_start();
+if (!isset($_SESSION['student_id'])) { header("Location: index.php"); exit(); }
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Address</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: Arial;
+        }
+        /* CSS Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .grid div {
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+        /* Flexbox */
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <div class="card shadow">
+        <h2 class="text-center bg-primary text-white p-3">
+            Student Address
+        </h2>
+        <div class="card-body">
+            <!-- CSS Grid -->
+            <h4>CSS Grid</h4>
+            <div class="grid">
+                <div><b>House No.</b></div>
+                <div>24</div>
+                <div><b>Street</b></div>
+                <div>Shiv Nagar</div>
+                <div><b>City</b></div>
+                <div>Ahmedabad</div>
+
+                <div><b>State</b></div>
+                <div>Gujarat</div>
+                <div><b>Country</b></div>
+                <div>India</div>
+                <div><b>Pincode</b></div>
+                <div>380001</div>
+            </div>
+            <hr>
+            <!-- Flexbox -->
+            <h4>Flexbox</h4>
+            <div class="flex"><b>City</b><span>Ahmedabad</span></div>
+            <div class="flex"><b>State</b><span>Gujarat</span></div>
+            <div class="flex"><b>Pincode</b><span>380001</span></div>
+            <hr>
+            <!-- Bootstrap -->
+            <h4>Bootstrap</h4>
+            <table class="table table-bordered table-striped">
+                <tr><th>House No.</th><td>24</td></tr>
+                <tr><th>Street</th><td>Shiv Nagar</td></tr>
+                <tr><th>City</th><td>Ahmedabad</td></tr>
+                <tr><th>State</th><td>Gujarat</td></tr>
+                <tr><th>Country</th><td>India</td></tr>
+                <tr><th>Pincode</th><td>380001</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+  contact.php:
+
+<?php
+session_start();
+if (!isset($_SESSION['student_id'])) { header("Location: index.php"); exit(); }
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Information</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: Arial;
+        }
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .grid div {
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+        /* Flexbox */
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <div class="card shadow">
+        <h2 class="text-center bg-primary text-white p-3">
+            Contact Information
+        </h2>
+        <div class="card-body">
+            <!-- CSS Grid -->
+            <h4>CSS Grid</h4>
+            <div class="grid">
+                <div><b>Student Name</b></div>
+                <div>Shrey Patel</div>
+                <div><b>Email</b></div>
+                <div>shrey@gmail.com</div>
+
+                <div><b>Phone</b></div>
+                <div>9876543210</div>
+                <div><b>College</b></div>
+                <div>ABC College of Computer Science</div>
+                <div><b>College Email</b></div>
+                <div>info@abccollege.edu</div>
+                <div><b>College Contact</b></div>
+                <div>079-12345678</div>
+            </div>
+            <hr>
+            <!-- Flexbox -->
+            <h4>Flexbox</h4>
+            <div class="flex"><b>Student Name</b><span>Shrey Patel</span></div>
+            <div class="flex"><b>Email</b><span>shrey@gmail.com</span></div>
+            <div class="flex"><b>Phone</b><span>9876543210</span></div>
+            <hr>
+            <!-- Bootstrap -->
+            <h4>Bootstrap</h4>
+            <table class="table table-bordered table-striped">
+                <tr><th>Student Name</th><td>Shrey Patel</td></tr>
+                <tr><th>Email</th><td>shrey@gmail.com</td></tr>
+                <tr><th>Phone</th><td>9876543210</td></tr>
+                <tr><th>College</th><td>ABC College of Computer Science</td></tr>
+                <tr><th>College Email</th><td>info@abccollege.edu</td></tr>
+                <tr><th>College Contact</th><td>079-12345678</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+ dashboard.php:
+
+<?php
+session_start();
+if (!isset($_SESSION['student_id'])) { header("Location: index.php"); exit(); }
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background-color: #f4f4f4; }
+        nav { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px; }
+        nav a { color: white; text-decoration: none; font-size: 16px; font-weight: bold; padding: 8px 12px; border-radius: 5px; }
+        nav a:hover { background-color: #007bff; }
+        .content { text-align: center; padding: 50px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="dashboard.php">Home</a>
+        <a href="studentdetails.php">Student Details</a>
+        <a href="fees.php">Fees</a>
+        <a href="achievements.php">Achievements</a>
+        <a href="address.php">Address</a>
+        <a href="parentsdetails.php">Parents</a>
+        <a href="contact.php">Contact</a>
+        <a href="logout.php">Logout</a>
+    </nav>
+    <div class="content">
+        <h1>Welcome, <?php echo $_SESSION['name']; ?>!</h1>
+        <p>Select any option from the navigation bar.</p>
+    </div>
+</body>
+</html>
+
+  fees.php:
+
+<?php
+session_start();
+if (!isset($_SESSION['student_id'])) { header("Location: index.php"); exit(); }
+?>
+<style>
+    /* Grid */
+    .fee-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    .fee-grid div {
+        padding: 12px;
+        border: 1px solid #ccc;
+    }
+    .heading {
+        font-weight: bold;
+        background: #e8e8e8;
+    }
+    /* Flexbox */
+    .fee-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+    }
+    /* Responsive */
+    @media (max-width: 600px) {
+        .fee-grid {
+            grid-template-columns: 1fr;
+        }
+        .fee-row {
+            flex-direction: column;
+        }
+    }
+</style>
+<div class="card-body">
+    <!-- CSS Grid -->
+    <h4>CSS Grid</h4>
+    <div class="fee-grid">
+        <div class="heading">Total Fees</div>
+        <div>₹60,000</div>
+        <div class="heading">Fees Paid</div>
+        <div>₹45,000</div>
+        <div class="heading">Remaining Fees</div>
+        <div>₹15,000</div>
+        <div class="heading">Payment Status</div>
+        <div>Partially Paid</div>
+        <div class="heading">Last Payment Date</div>
+        <div>10 July 2026</div>
+    </div>
+    <hr>
+    <!-- Flexbox -->
+    <h4>Flexbox</h4>
+    <div class="fee-row">
+        <b>Total Fees</b>
+        <span>₹60,000</span>
+    </div>
+    <div class="fee-row">
+        <b>Fees Paid</b>
+        <span>₹45,000</span>
+    </div>
+    <div class="fee-row">
+        <b>Remaining Fees</b>
+        <span>₹15,000</span>
+    </div>
+    <div class="fee-row">
+        <b>Payment Status</b>
+        <span>Partially Paid</span>
+    </div>
+    <div class="fee-row">
+        <b>Last Payment Date</b>
+        <span>10 July 2026</span>
+    </div>
+    <hr>
+    <!-- Bootstrap -->
+    <h4>Bootstrap</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Total Fees</th>
+            <td>₹60,000</td>
+        </tr>
+        <tr>
+            <th>Fees Paid</th>
+            <td>₹45,000</td>
+        </tr>
+        <tr>
+            <th>Remaining Fees</th>
+            <td>₹15,000</td>
+        </tr>
+        <tr>
+            <th>Payment Status</th>
+            <td>Partially Paid</td>
+        </tr>
+        <tr>
+            <th>Last Payment Date</th>
+            <td>10 July 2026</td>
+        </tr>
+    </table>
+</div>
+
+
+  parentsdetails.php:
+
+<?php
+session_start();
+if (!isset($_SESSION['student_id'])) { header("Location: index.php"); exit(); }
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parents Information</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+        /* CSS Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .grid div {
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+        /* Flexbox */
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <div class="card shadow">
+
+        <h2 class="text-center bg-primary text-white p-3">
+            Parents Information
+        </h2>
+        <div class="card-body">
+            <!-- CSS Grid -->
+            <h4>CSS Grid</h4>
+            <div class="grid">
+                <div><b>Father's Name</b></div>
+                <div>Mahesh Patel</div>
+                <div><b>Occupation</b></div>
+                <div>Businessman</div>
+                <div><b>Contact</b></div>
+                <div>9876543210</div>
+                <div><b>Mother's Name</b></div>
+                <div>Anita Patel</div>
+                <div><b>Occupation</b></div>
+                <div>Teacher</div>
+                <div><b>Contact</b></div>
+                <div>9876501234</div>
+            </div>
+            <hr>
+
+            <!-- Flexbox -->
+            <h4>Flexbox</h4>
+            <div class="flex">
+                <b>Father's Name</b>
+                <span>Mahesh Patel</span>
+            </div>
+            <div class="flex">
+                <b>Mother's Name</b>
+                <span>Anita Patel</span>
+            </div>
+            <div class="flex">
+                <b>Contact</b>
+                <span>9876543210</span>
+            </div>
+            <hr>
+            <!-- Bootstrap -->
+            <h4>Bootstrap</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th>Father's Name</th>
+                        <td>Mahesh Patel</td>
+                    </tr>
+                    <tr>
+                        <th>Occupation</th>
+                        <td>Businessman</td>
+                    </tr>
+                    <tr>
+                        <th>Contact</th>
+                        <td>9876543210</td>
+                    </tr>
+                    <tr>
+                        <th>Mother's Name</th>
+                        <td>Anita Patel</td>
+                    </tr>
+                    <tr>
+                        <th>Occupation</th>
+                        <td>Teacher</td>
+                    </tr>
+                    <tr>
+                        <th>Contact</th>
+                        <td>9876501234</td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+  studentsdetails.php:
+
+<?php
+session_start();
+if (!isset($_SESSION['student_id'])) { header("Location: index.php"); exit(); }
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: Arial;
+        }
+        /* CSS Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .grid div {
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+        /* Flexbox */
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            background: white;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <div class="card shadow">
+        <h2 class="text-center bg-primary text-white p-3">
+            Student Details
+        </h2>
+        <div class="card-body">
+            <!-- CSS Grid -->
+            <h4>CSS Grid</h4>
+            <div class="grid">
+                <div><b>Name</b></div>
+                <div>Shrey Patel</div>
+                <div><b>Student ID</b></div>
+                <div>STU101</div>
+                <div><b>Course</b></div>
+                <div>BCA</div>
+                <div><b>Semester</b></div>
+                <div>3</div>
+                <div><b>Department</b></div>
+                <div>Computer Science</div>
+                <div><b>Email</b></div>
+                <div>shrey@gmail.com</div>
+                <div><b>Phone</b></div>
+                <div>9876543210</div>
+            </div>
+            <hr>
+            <!-- Flexbox -->
+            <h4>Flexbox</h4>
+            <div class="flex"><b>Name</b><span>Shrey Patel</span></div>
+            <div class="flex"><b>Course</b><span>BCA</span></div>
+            <div class="flex"><b>Semester</b><span>3</span></div>
+            <hr>
+            <!-- Bootstrap -->
+            <h4>Bootstrap</h4>
+            <table class="table table-bordered table-striped">
+                <tr><th>Name</th><td>Shrey Patel</td></tr>
+                <tr><th>Student ID</th><td>STU101</td></tr>
+                <tr><th>Course</th><td>BCA</td></tr>
+                <tr><th>Semester</th><td>3</td></tr>
+                <tr><th>Department</th><td>Computer Science</td></tr>
+                <tr><th>Email</th><td>shrey@gmail.com</td></tr>
+                <tr><th>Phone</th><td>9876543210</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
